@@ -3,20 +3,32 @@ import openai
 import uuid
 import time
 import os
+import pandas as pd
 
 # Set up the OpenAI API key
 openai.api_key = os.environ["JOSHUA_FREEEDU_OPENAI_API_KEY"]
 
 # Initialize the conversation history
-st.session_state["conversation_history"] = []
+if st.session_state.get("conversation_history") is None:
+    st.session_state["conversation_history"] = pd.DataFrame(columns=["User Prompts","Bot Responses"])
+
+# if st.session_state.get("conversation_history", pd.DataFrame()).empty:
+#     st.session_state["conversation_history"] = pd.DataFrame(columns=["User Prompts","Bot Responses"])
+
 
 # Define a function to generate a response from OpenAI's GPT model
 def generate_response(prompt, conversation_history):
+    # Concatenate the last 2 prompts and bot responses from conversation history with the new prompt
+    # We only need the last 2 conversations to conserve tokens
+    conversation = parse_conversation(conversation_history, display_only=False)
 
-    # Generate the initial response
+
+    new_prompt = "Respond in a cheerful and friendly chatbot manner, while considering our conversation history as follows: \n \"" + conversation + "\" \n Now, with consideration to that conversation history, answer this new prompt: \n " + prompt
+    print(f"Prompt sent to ChatGPT: \n{new_prompt}")
+    # Generate the response
     response = openai.Completion.create(
         model="text-davinci-002",
-        prompt=prompt,
+        prompt=new_prompt,
         max_tokens=1024,
         temperature=0.7,
         n=1,
@@ -26,20 +38,22 @@ def generate_response(prompt, conversation_history):
     # Extract the response text from the API response
     response_text = response.choices[0].text.strip()
 
-    # Update the conversation history
-    conversation_history.append("User: " + prompt)
-    conversation_history.append("Chatbot: " + response_text)
-    st.session_state["conversation_history"] = conversation_history
+    # Return the response text and updated conversation history
+    return response_text
 
-    conversation_history_str =""
-    for text in conversation_history:
-        conversation_history_str += f"\n {text}"
+def parse_conversation(conversation_history, count_from_last = 5, display_only = True):
+    conversation = ""
+    if display_only == False and len(conversation_history) > count_from_last:
+        for i in range((len(conversation_history)-1) - (count_from_last-1), len(conversation_history)):
+            conversation += "User: " + conversation_history.iloc[i,0] + "\n"
+            conversation += "ChatBot: " + conversation_history.iloc[i,1] + "\n"
+    else:
+        for i in range(len(conversation_history)):
+            conversation += f"Log #{i+1} ------------------------------------------------------ \n"
+            conversation += "User: " + conversation_history.iloc[i,0] + "\n"
+            conversation += "ChatBot: " + conversation_history.iloc[i,1] + "\n\n"
 
-    # Wait for a moment to avoid rate limiting issues
-    time.sleep(0.5)
-    # Return the response text and conversation history
-    return response_text, conversation_history_str
-
+    return conversation
 
 # Define the Streamlit app
 def main():
@@ -56,12 +70,19 @@ def main():
     # Add a button to submit the user's message and generate a response
     if st.button("Send"):
         # Append the user's message to the conversation prompt
-        conversation_prompt += user_message.strip() + "\n"
+        conversation_prompt += user_message.strip()
         # Generate a response from OpenAI's GPT model
-        bot_response, conversation_history = generate_response(conversation_prompt, st.session_state["conversation_history"])
+        bot_response = generate_response(conversation_prompt, conversation_history)
 
+        # Update the conversation history in session state
+        conversation_history.loc[len(conversation_history)] = [conversation_prompt, bot_response]
+        st.session_state["conversation_history"] = conversation_history
+
+
+
+    conversation = parse_conversation(st.session_state["conversation_history"])
     # Display the conversation history
-    st.text_area("Chat", value=conversation_history, height=400, disabled=True)
+    st.text_area("Chat", value=conversation, height=800, disabled=True)
 
 # Run the chatbot
 if __name__ == "__main__":
