@@ -22,9 +22,9 @@ def generate_response(prompt, conversation_history):
     # We only need the last 2 conversations to conserve tokens
     conversation = parse_conversation(conversation_history, display_only=False)
 
-
     new_prompt = "Respond in a cheerful and friendly chatbot manner, while considering our conversation history as follows: \n \"" + conversation + "\" \n Now, with consideration to that conversation history, answer this new prompt: \n " + prompt
     print(f"Prompt sent to ChatGPT: \n{new_prompt}")
+
     # Generate the response
     response = openai.Completion.create(
         model="text-davinci-002",
@@ -77,8 +77,6 @@ def main():
         # Update the conversation history in session state
         conversation_history.loc[len(conversation_history)] = [conversation_prompt, bot_response]
         st.session_state["conversation_history"] = conversation_history
-
-
 
     conversation = parse_conversation(st.session_state["conversation_history"])
     # Display the conversation history
