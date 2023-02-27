@@ -84,10 +84,23 @@ def main():
     if st.button("Send"):
         send_message(conversation_history, user_message)
 
+    # Add an event handler for the 'enter' key press
+    if user_message and st.session_state.last_key_pressed == "enter":
+        send_message()
+
+    # Add an event listener for the 'enter' key press
+    if "last_key_pressed" not in st.session_state:
+        st.session_state.last_key_pressed = None
+
+    st.script(
+        "document.addEventListener('keydown', function(event) {if (event.code == 'Enter') {streamlit_component_on_change({'key': 'last_key_pressed', 'value': 'enter'});}});")
+
     # Display the conversation history
     conversation = parse_conversation(st.session_state["conversation_history"])
     st.text_area("Chat", value=conversation, height=800, disabled=True)
 
+    # Reset the last_key_pressed state
+    st.session_state.last_key_pressed = None
 # Run the chatbot
 if __name__ == "__main__":
     main()
