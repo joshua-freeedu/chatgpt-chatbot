@@ -78,27 +78,16 @@ def main():
     conversation_history = st.session_state.get("conversation_history", "")
 
     # Add a text input for the user to enter their message
-    user_message = st.text_input("You", value="", key="user_message")
+    user_message = st.text_input("You", value="", key="user_message", on_change=send_message(conversation_history, "What day is it today"))
 
     # Add a button to submit the user's message and generate a response
     if st.button("Send"):
         send_message(conversation_history, user_message)
 
-    # Add an event listener for the 'enter' key press
-    if user_message:
-        st.session_state.last_key_pressed = st.session_state.get("last_key_pressed", None)
-        if st.session_state.last_key_pressed == "Enter":
-            send_message()
-    # Add an on_change event listener for the 'enter' key press
-    st.text_input("", key="hidden", on_change=("last_key_pressed", "Enter"))
-
-
     # Display the conversation history
     conversation = parse_conversation(st.session_state["conversation_history"])
     st.text_area("Chat", value=conversation, height=800, disabled=True)
 
-    # Reset the last_key_pressed state
-    st.session_state.last_key_pressed = None
 # Run the chatbot
 if __name__ == "__main__":
     main()
