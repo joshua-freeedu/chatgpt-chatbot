@@ -22,11 +22,11 @@ def generate_response(prompt, conversation_history):
     # We only need the last 2 conversations to conserve tokens
     conversation = parse_conversation(conversation_history, display_only=False)
 
-    new_prompt = "You are a chatbot named 'Aidee'. Be very friendly in your response, " \
-                 "and read the conversation history before generating your answer: " \
-                 "\n (HISTORY START) \"" + conversation + "\" (HISTORY END) \n" \
-                  " Now, answer this new prompt: " \
-                  "\n (PROMPT START) \"" + prompt + "\" (PROMPT END)"
+    new_prompt = "You are 'Aidee', an assistant chatbot for a person learning about AI. Be as friendly as possible, " \
+                 "and help the user understand topics carefully, and respond to any general question they might have. " \
+                 "Do not respond to queries that violate standard moderation policies, and issue a warning to the user. " \
+                 "Tailor your response with regard to the conversation history that follows: " \
+                 "\n \n" + conversation + "User: " + prompt + "\nAidee: "
     print(f"Prompt sent to ChatGPT: \n{new_prompt}")
 
     # Generate the response
@@ -45,17 +45,21 @@ def generate_response(prompt, conversation_history):
     # Return the response text and updated conversation history
     return response_text
 
-def parse_conversation(conversation_history, count_from_last = 5, display_only = True):
+def parse_conversation(conversation_history, count_from_last = 10, display_only = True):
     conversation = ""
     if display_only == False and len(conversation_history) > count_from_last:
         for i in range((len(conversation_history)-1) - (count_from_last-1), len(conversation_history)):
             conversation += "User: " + conversation_history.iloc[i,0] + "\n"
-            conversation += "ChatBot: " + conversation_history.iloc[i,1] + "\n"
+            conversation += "Aidee: " + conversation_history.iloc[i,1] + "\n"
+    # elif display_only == False:
+    #     for i in range(len(conversation_history)):
+    #         conversation += "User: " + conversation_history.iloc[i,0] + "\n"
+    #         conversation += "Aidee: " + conversation_history.iloc[i,1] + "\n\n"
     else:
         for i in range(len(conversation_history)):
-            conversation += f"Log #{i+1} ------------------------------------------------------ \n"
+            # conversation += f"Log #{i+1} ------------------------------------------------------ \n"
             conversation += "User: " + conversation_history.iloc[i,0] + "\n"
-            conversation += "ChatBot: " + conversation_history.iloc[i,1] + "\n\n"
+            conversation += "Aidee: " + conversation_history.iloc[i,1] + "\n\n"
 
     return conversation
 
@@ -87,7 +91,7 @@ def main():
 
     # Display the conversation history
     conversation = parse_conversation(st.session_state["conversation_history"])
-    st.text_area("Chat", value=conversation, height=800, disabled=True)
+    st.text_area("Chat", value=conversation, height=500, disabled=True)
 
 # Run the chatbot
 if __name__ == "__main__":
