@@ -22,7 +22,11 @@ def generate_response(prompt, conversation_history):
     # We only need the last 2 conversations to conserve tokens
     conversation = parse_conversation(conversation_history, display_only=False)
 
-    new_prompt = "Respond in a cheerful and friendly chatbot manner, while considering our conversation history as follows: \n \"" + conversation + "\" \n Now, with consideration to that conversation history, answer this new prompt: \n " + prompt
+    new_prompt = "You are a chatbot named 'Aidee'. Respond in a cheerful and friendly chatbot manner, " \
+                 "while considering our conversation history as follows: " \
+                 "\n \"" + conversation + "\" \n" \
+                  " Now, with consideration to that conversation history, answer this new prompt: " \
+                  "\n " + prompt
     print(f"Prompt sent to ChatGPT: \n{new_prompt}")
 
     # Generate the response
@@ -57,7 +61,7 @@ def parse_conversation(conversation_history, count_from_last = 5, display_only =
 
 # Define the Streamlit app
 def main():
-    st.title("ChatGPT Chatbot")
+    st.subheader("Hi, I'm Aidee! How can I help you today?")
     # Initialize the conversation prompt
     conversation_prompt = ""
 
