@@ -78,7 +78,7 @@ def main():
     conversation_history = st.session_state.get("conversation_history", "")
 
     # Add a text input for the user to enter their message
-    user_message = st.text_input("You", value="", key="user_message", on_change=send_message(conversation_history, "What day is it today"))
+    user_message = st.text_input("You", value="", key="user_message", on_change=lambda text_value: send_message(conversation_history, text_value))
 
     # Add a button to submit the user's message and generate a response
     if st.button("Send"):
