@@ -92,8 +92,7 @@ def main():
     if "last_key_pressed" not in st.session_state:
         st.session_state.last_key_pressed = None
 
-    st.script(
-        "document.addEventListener('keydown', function(event) {if (event.code == 'Enter') {streamlit_component_on_change({'key': 'last_key_pressed', 'value': 'enter'});}});")
+    st.script("document.addEventListener('keydown', function(event) {if (event.code == 'Enter') {streamlit_component_on_change({'key': 'last_key_pressed', 'value': 'enter'});}});")
 
     # Display the conversation history
     conversation = parse_conversation(st.session_state["conversation_history"])
