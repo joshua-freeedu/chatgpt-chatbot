@@ -59,12 +59,21 @@ def parse_conversation(conversation_history, count_from_last = 5, display_only =
 
     return conversation
 
+def send_message(conversation_history, user_message):
+    # Initialize the conversation prompt
+    conversation_prompt = ""
+    # Append the user's message to the conversation prompt
+    conversation_prompt += user_message.strip()
+    # Generate a response from OpenAI's GPT model
+    bot_response = generate_response(conversation_prompt, conversation_history)
+
+    # Update the conversation history in session state
+    conversation_history.loc[len(conversation_history)] = [conversation_prompt, bot_response]
+    st.session_state["conversation_history"] = conversation_history
+
 # Define the Streamlit app
 def main():
     st.subheader("Hi, I'm Aidee! How can I help you today?")
-    # Initialize the conversation prompt
-    conversation_prompt = ""
-
     # Load the conversation history from localStorage
     conversation_history = st.session_state.get("conversation_history", "")
 
@@ -73,17 +82,10 @@ def main():
 
     # Add a button to submit the user's message and generate a response
     if st.button("Send"):
-        # Append the user's message to the conversation prompt
-        conversation_prompt += user_message.strip()
-        # Generate a response from OpenAI's GPT model
-        bot_response = generate_response(conversation_prompt, conversation_history)
+        send_message(conversation_history, user_message)
 
-        # Update the conversation history in session state
-        conversation_history.loc[len(conversation_history)] = [conversation_prompt, bot_response]
-        st.session_state["conversation_history"] = conversation_history
-
-    conversation = parse_conversation(st.session_state["conversation_history"])
     # Display the conversation history
+    conversation = parse_conversation(st.session_state["conversation_history"])
     st.text_area("Chat", value=conversation, height=800, disabled=True)
 
 # Run the chatbot
