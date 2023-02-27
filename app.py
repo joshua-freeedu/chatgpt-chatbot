@@ -90,7 +90,7 @@ def main():
     # Add an event listener for the 'enter' key press
     if "last_key_pressed" not in st.session_state:
         st.session_state.last_key_pressed = None
-    st.write("""
+    st.markdown("""
         <script>
             const input = document.getElementById('user_message');
             input.addEventListener('keyup', function(event) {
@@ -99,7 +99,7 @@ def main():
                 }
             });
         </script>
-    """)
+    """, unsafe_allow_html=True)
     # Display the conversation history
     conversation = parse_conversation(st.session_state["conversation_history"])
     st.text_area("Chat", value=conversation, height=800, disabled=True)
