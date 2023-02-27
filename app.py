@@ -22,16 +22,16 @@ def generate_response(prompt, conversation_history):
     # We only need the last 2 conversations to conserve tokens
     conversation = parse_conversation(conversation_history, display_only=False)
 
-    new_prompt = "You are a chatbot named 'Aidee'. Respond in a cheerful and friendly chatbot manner, " \
-                 "while considering our conversation history as follows: " \
-                 "\n \"" + conversation + "\" \n" \
-                  " Now, with consideration to that conversation history, answer this new prompt: " \
-                  "\n " + prompt
+    new_prompt = "You are a chatbot named 'Aidee'. Be very friendly in your response, " \
+                 "and read the conversation history before generating your answer: " \
+                 "\n (HISTORY START) \"" + conversation + "\" (HISTORY END) \n" \
+                  " Now, answer this new prompt: " \
+                  "\n (PROMPT START) \"" + prompt + "\" (PROMPT END)"
     print(f"Prompt sent to ChatGPT: \n{new_prompt}")
 
     # Generate the response
     response = openai.Completion.create(
-        model="text-davinci-002",
+        model="text-davinci-003",
         prompt=new_prompt,
         max_tokens=1024,
         temperature=0.7,
