@@ -6,7 +6,7 @@ import os
 import pandas as pd
 
 # Set up the OpenAI API key
-openai.api_key = os.environ["JOSHUA_FREEEDU_OPENAI_API_KEY"]
+openai.api_key = os.environ["FREEEDU_OPENAI_API_KEY"]
 
 # Initialize the conversation history
 if st.session_state.get("conversation_history") is None:
@@ -15,6 +15,8 @@ if st.session_state.get("conversation_history") is None:
 # if st.session_state.get("conversation_history", pd.DataFrame()).empty:
 #     st.session_state["conversation_history"] = pd.DataFrame(columns=["User Prompts","Bot Responses"])
 
+# Load the conversation history from localStorage
+conversation_history = st.session_state.get("conversation_history", "")
 
 # Define a function to generate a response from OpenAI's GPT model
 def generate_response(prompt, conversation_history):
@@ -78,8 +80,6 @@ def send_message(conversation_history, user_message):
 # Define the Streamlit app
 def main():
     st.subheader("Hi, I'm Aidee! How can I help you today?")
-    # Load the conversation history from localStorage
-    conversation_history = st.session_state.get("conversation_history", "")
 
     # Add a text input for the user to enter their message
     user_message = st.text_input("You", value="", key="user_message")
