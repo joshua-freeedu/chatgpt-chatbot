@@ -2,3 +2,4 @@ streamlit
 openai
 pandas
 flask
+flask-cors

@@ -18,35 +18,6 @@ if st.session_state.get("conversation_history") is None:
 # Load the conversation history from localStorage
 conversation_history = st.session_state.get("conversation_history", "")
 
-# Define a function to generate a response from OpenAI's GPT model
-def generate_response(prompt, conversation_history):
-    # Concatenate the last 2 prompts and bot responses from conversation history with the new prompt
-    # We only need the last 2 conversations to conserve tokens
-    conversation = parse_conversation(conversation_history, display_only=False)
-
-    new_prompt = "You are 'Aidee', an assistant chatbot for a person learning about AI. Be as friendly as possible, " \
-                 "and help the user understand topics carefully, and respond to any general question they might have. " \
-                 "Do not respond to queries that violate standard moderation policies, and issue a warning to the user. " \
-                 "Tailor your response with regard to the conversation history that follows: " \
-                 "\n \n" + conversation + "User: " + prompt + "\nAidee: "
-    print(f"Prompt sent to ChatGPT: \n{new_prompt}")
-
-    # Generate the response
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=new_prompt,
-        max_tokens=1024,
-        temperature=0.7,
-        n=1,
-        stop=None,
-    )
-
-    # Extract the response text from the API response
-    response_text = response.choices[0].text.strip()
-
-    # Return the response text and updated conversation history
-    return response_text
-
 def parse_conversation(conversation_history, count_from_last = 10, display_only = True):
     conversation = ""
     if display_only == False and len(conversation_history) > count_from_last:
@@ -65,6 +36,34 @@ def parse_conversation(conversation_history, count_from_last = 10, display_only 
 
     return conversation
 
+# Define a function to generate a response from OpenAI's GPT model
+def generate_response(prompt, conversation_history):
+    # Concatenate the last 2 prompts and bot responses from conversation history with the new prompt
+    # We only need the last 2 conversations to conserve tokens
+    conversation = parse_conversation(conversation_history, display_only=False)
+    context = "You are 'Aidee', an assistant chatbot for a person learning about AI. Be as friendly as possible, " \
+                 "and help the user understand topics carefully, and respond to any general question they might have. " \
+                 "Do not respond to queries that violate standard moderation policies, and issue a warning to the user. \n \n" \
+              "Aidee: Hi, I'm Aidee! How can I help you? \n"
+    new_prompt = context + conversation + "User: " + prompt + "\nAidee: "
+    print(f"Prompt sent to ChatGPT: \n{new_prompt}")
+
+    # Generate the response
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=new_prompt,
+        max_tokens=1024,
+        temperature=0.7,
+        n=1,
+        stop=None,
+    )
+
+    # Extract the response text from the API response
+    response_text = response.choices[0].text.strip()
+
+    # Return the response text and updated conversation history
+    return response_text
+
 def send_message(conversation_history, user_message):
     # Initialize the conversation prompt
     conversation_prompt = ""
@@ -73,13 +72,14 @@ def send_message(conversation_history, user_message):
     # Generate a response from OpenAI's GPT model
     bot_response = generate_response(conversation_prompt, conversation_history)
 
-    # Update the conversation history in session state
+    # Add the new user message and the bot's response to the conversation history
     conversation_history.loc[len(conversation_history)] = [conversation_prompt, bot_response]
+    # Update the session's conversation history
     st.session_state["conversation_history"] = conversation_history
 
 # Define the Streamlit app
 def main():
-    st.subheader("Hi, I'm Aidee! How can I help you today?")
+    st.subheader("Hi, I'm Aidee! How can I help you?")
 
     # Add a text input for the user to enter their message
     user_message = st.text_input("You", value="", key="user_message")
