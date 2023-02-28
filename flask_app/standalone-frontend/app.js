@@ -7,7 +7,7 @@ class Chatbox {
         }
 
         this.state = false;
-        this.messages = []
+        this.messages = [];
     }
 
     display() {
@@ -19,7 +19,7 @@ class Chatbox {
 
         const node = chatBox.querySelector('input');
         node.addEventListener("keyup", ({key}) => {
-            if (key == "Enter") {
+            if (key === "Enter") {
                 this.onSendButton(chatBox)
             }
         })
@@ -46,33 +46,32 @@ class Chatbox {
         let msg1 = { name: "User", message: text1 }
         this.messages.push(msg1);
 
-        // 'http://127.0.0.1:5000/chat
-        fetch($SCRIPT_ROOT + '/chat', {
+        fetch('http://127.0.0.1:5000/chat', {
             method: 'POST',
             body: JSON.stringify({ message: this.messages }),
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+              'Content-Type': 'application/json'
             },
-        })
-        .then(r => r.json())
-        .then(r => {
-            let msg2 = {name: "Aidee", message: r.answer};
+          })
+          .then(r => r.json())
+          .then(r => {
+            let msg2 = { name: "Sam", message: r.answer };
             this.messages.push(msg2);
             this.updateChatText(chatbox)
             textField.value = ''
-        })
-        .catch((error) => {
+
+        }).catch((error) => {
             console.error('Error:', error);
             this.updateChatText(chatbox)
             textField.value = ''
-        });
+          });
     }
 
     updateChatText(chatbox) {
-        var html = ''
+        var html = '';
         this.messages.slice().reverse().forEach(function(item, index) {
-            if (item.name == "Aidee")
+            if (item.name === "Sam")
             {
                 html += '<div class="messages__item messages__item--visitor">' + item.message + '</div>'
             }
@@ -80,15 +79,13 @@ class Chatbox {
             {
                 html += '<div class="messages__item messages__item--operator">' + item.message + '</div>'
             }
-        });
+          });
 
         const chatmessage = chatbox.querySelector('.chatbox__messages');
         chatmessage.innerHTML = html;
-
     }
-
-
 }
+
 
 const chatbox = new Chatbox();
 chatbox.display();

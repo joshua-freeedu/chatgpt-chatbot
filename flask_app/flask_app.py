@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 # from routes import chatbot_bp
 
 import openai
@@ -6,9 +7,32 @@ import os
 import pandas as pd
 
 app = Flask(__name__)
+CORS(app)
 
 # Set up the OpenAI API key
 openai.api_key = os.environ["FREEEDU_OPENAI_API_KEY"]
+
+# @app.get("/")
+# def index_get():
+#     return render_template("base.html")
+
+@app.post("/chat")
+def send_message():
+# def send_message(user_message, chat_history):
+    # Get the message and history from the POST request
+    user_message = request.get_json().get("messages")
+
+    # Generate a response from OpenAI's GPT model
+    bot_response = generate_response(user_message)
+
+    # Add the new user message and the bot's response to the chat history
+    # chat_history.loc[len(chat_history)] = [user_message, bot_response]
+
+    # # Update the session's chat history
+    # user[user_id].get("chat_history") = chat_history
+
+    message = {"answer": bot_response}
+    return jsonify(message)
 
 def parse_chat(chat_history, count_from_last = 10):
     chat = ""
@@ -43,28 +67,6 @@ def generate_response(user_message):
     response_text = response.choices[0].text.strip()
     # Return the response text and updated chat history
     return response_text
-
-@app.post("/chat")
-def send_message():
-# def send_message(user_message, chat_history):
-    # Get the message and history from the POST request
-    user_message = request.get_json().get("messages")
-
-    # Generate a response from OpenAI's GPT model
-    bot_response = generate_response(user_message)
-
-    # Add the new user message and the bot's response to the chat history
-    # chat_history.loc[len(chat_history)] = [user_message, bot_response]
-
-    # # Update the session's chat history
-    # user[user_id].get("chat_history") = chat_history
-
-    message = {"answer": bot_response}
-    return jsonify(message)
-
-@app.get("/")
-def index_get():
-    return render_template("base.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
