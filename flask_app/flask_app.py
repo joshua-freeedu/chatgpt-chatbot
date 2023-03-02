@@ -53,7 +53,7 @@ def generate_response(user_message):
 
     # Generate the response
     response = openai.Completion.create(
-        model="text-davinci-003",
+        model="gpt-3.5-turbo",
         prompt=new_prompt,
         max_tokens=1024,
         temperature=0.7,
