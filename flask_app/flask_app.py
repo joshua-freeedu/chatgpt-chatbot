@@ -34,14 +34,13 @@ def send_message():
 
 def parse_chat(chat_history, count_from_last = 10):
     chat = []
-    role = {"User":"user", "Aidee":"assistant"}
     if len(chat_history) > count_from_last:
         for i in range((len(chat_history)-1) - (count_from_last-1), len(chat_history)):
-            chat.append({"role":role[chat_history[i]['name']],
+            chat.append({"role":chat_history[i]['name'],
                          "content":chat_history[i]['message']})
     else:
         for i in range(len(chat_history)):
-            chat.append({"role":role[chat_history[i]['name']],
+            chat.append({"role":chat_history[i]['name'],
                          "content":chat_history[i]['message']})
     return chat
 
