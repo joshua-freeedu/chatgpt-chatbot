@@ -1,26 +1,24 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-# from routes import chatbot_bp
 
 import openai
 import os
-import pandas as pd
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 
 # Set up the OpenAI API key
 openai.api_key = os.environ["FREEEDU_OPENAI_API_KEY"]
 
-# @app.get("/")
-# def index_get():
-#     return render_template("base.html")
+@app.get("/")
+def index_get():
+    return render_template("base.html")
 
 @app.post("/chat")
 def send_message():
 # def send_message(user_message, chat_history):
     # Get the message and history from the POST request
-    user_message = request.get_json().get("messages")
+    user_message = request.get_json().get("message")
 
     # Generate a response from OpenAI's GPT model
     bot_response = generate_response(user_message)
