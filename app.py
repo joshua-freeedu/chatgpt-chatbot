@@ -49,7 +49,7 @@ def generate_response(prompt, conversation_history):
     print(f"Prompt sent to ChatGPT: \n{new_prompt}")
 
     # Generate the response
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         prompt=new_prompt,
         max_tokens=1024,
