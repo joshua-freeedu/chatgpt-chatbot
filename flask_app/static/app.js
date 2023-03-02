@@ -49,7 +49,7 @@ class Chatbox {
         // 'http://127.0.0.1:5000/chat
         fetch($SCRIPT_ROOT + '/chat', {
             method: 'POST',
-            body: JSON.stringify({ message: this.messages }),
+            body: JSON.stringify({ messages: this.messages }),
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
