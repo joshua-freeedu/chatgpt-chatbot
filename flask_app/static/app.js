@@ -43,7 +43,7 @@ class Chatbox {
             return;
         }
 
-        let msg1 = { name: "User", message: text1 }
+        let msg1 = { name: "user", message: text1 }
         this.messages.push(msg1);
 
         // 'http://127.0.0.1:5000/chat
@@ -57,7 +57,7 @@ class Chatbox {
         })
         .then(r => r.json())
         .then(r => {
-            let msg2 = {name: "Aidee", message: r.answer};
+            let msg2 = {name: "assistant", message: r.answer};
             this.messages.push(msg2);
             this.updateChatText(chatbox)
             textField.value = ''
@@ -72,7 +72,7 @@ class Chatbox {
     updateChatText(chatbox) {
         var html = ''
         this.messages.slice().reverse().forEach(function(item, index) {
-            if (item.name == "Aidee")
+            if (item.name == "assistant")
             {
                 html += '<div class="messages__item messages__item--visitor">' + item.message + '</div>'
             }
